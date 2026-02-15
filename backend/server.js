@@ -2,7 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import connectDB from './config/db.js'
 import authRoutes from './routes/auth.js'
-import verifyToken from './middlewares/verifyToken.js'
+import roomRoutes from './routes/room.js'
 
 dotenv.config()
 
@@ -15,6 +15,7 @@ app.get('/', (req,res)=>{
 })
 
 app.use('/auth', authRoutes);
+app.use('/room', roomRoutes);
 
 app.listen(PORT, () => {
     connectDB()
