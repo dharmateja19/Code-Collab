@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.js'
 import roomRoutes from './routes/room.js'
 import http from 'http';
 import { Server } from 'socket.io'
+import cors from 'cors'
 
 dotenv.config()
 
@@ -20,6 +21,7 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 3000
 app.use(express.json())
+app.use(cors())
 
 app.get('/', (req,res)=>{
     res.send('Hello from server...')
