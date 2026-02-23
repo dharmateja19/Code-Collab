@@ -3,7 +3,9 @@ import Register from "./components/Register.jsx";
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Home from "./components/Home.jsx";
 import Navbar from "./components/Navbar.jsx";
-import Room from "./components/JoinRoom.jsx";
+import Profile from "./components/Profile.jsx";
+import Dashboard from "./components/Dashboard.jsx";
+import RoomPage from "./components/RoomPage.jsx";
 
 function App() {
   return (
@@ -14,7 +16,9 @@ function App() {
           <Route path="/" element={ <Home/> }></Route>
           <Route path="/login" element = {<Login/>}></Route>
           <Route path="/register" element= {<Register/>}></Route>
-          <Route path="/joinroom" element = {<Room/>}></Route>
+          <Route path="/dashboard" element= {<Dashboard/>}></Route>
+          <Route path="/profile" element= {<Profile/>}></Route>
+          <Route path="/room/:roomId" element={<RoomPage />} />
         </Routes>
       </BrowserRouter>
     </>
