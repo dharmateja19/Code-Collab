@@ -27,7 +27,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-gray-900 text-white px-8 py-4 flex justify-between items-center shadow-md">
+    <nav className="relative z-50 bg-gray-900 text-white px-8 py-4 flex justify-between items-center shadow-md">
 
       {/* LEFT SIDE */}
       <Link
@@ -56,7 +56,7 @@ const Navbar = () => {
 
           {/* Dropdown */}
           {open && (
-            <div className="absolute right-0 mt-3 w-48 bg-white text-black rounded-lg shadow-lg overflow-hidden">
+            <div className="absolute right-0 mt-3 w-48 bg-white text-black rounded-lg shadow-lg overflow-hidden z-50">
 
               <div className="px-4 py-3 border-b text-sm text-gray-700">
                 Hi, <span className="font-semibold">{user?.name}</span>

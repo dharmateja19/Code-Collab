@@ -6,6 +6,7 @@ import roomRoutes from './routes/room.js'
 import http from 'http';
 import { Server } from 'socket.io'
 import cors from 'cors'
+import { roomSocket } from './sockets/roomSocket.js';
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ const io = new Server(server, {
     }
 })
 
+roomSocket(io);
 const PORT = process.env.PORT || 3000
 app.use(express.json())
 app.use(cors())
@@ -30,7 +32,7 @@ app.get('/', (req,res)=>{
 app.use('/auth', authRoutes);
 app.use('/room', roomRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectDB()
     console.log(`server is running on http://localhost:${PORT}`)
 })

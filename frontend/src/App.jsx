@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar.jsx";
 import Profile from "./components/Profile.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 import RoomPage from "./components/RoomPage.jsx";
+import RoomEditor from "./components/RoomEditor.jsx";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
           <Route path="/register" element= {<Register/>}></Route>
           <Route path="/dashboard" element= {<Dashboard/>}></Route>
           <Route path="/profile" element= {<Profile/>}></Route>
-          <Route path="/room/:roomId" element={<RoomPage />} />
+          <Route path="/room/:roomId" element={<RoomEditor />} />
+          {/* <Route path="/room/:roomId" element={<RoomPage />} /> */}
         </Routes>
       </BrowserRouter>
     </>

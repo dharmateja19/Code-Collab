@@ -49,8 +49,8 @@ const Dashboard = () => {
           },
         }
       );
-
-      const newRoomId = response.data.roomId;
+      console.log(response.data)
+      const newRoomId = response.data.room.roomId;
       navigate(`/room/${newRoomId}`);
     } catch (error) {
       console.log(error.response?.data || error.message);
