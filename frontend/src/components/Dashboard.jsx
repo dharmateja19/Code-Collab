@@ -10,13 +10,27 @@ const Dashboard = () => {
   const [roomId, setRoomId] = useState("");
   const [rooms, setRooms] = useState([]);
 
+  const fetchRooms = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/room/my-rooms", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setRooms(response.data.rooms);
+    } catch (error) {
+      console.log(error);
+      console.log("Failed to load rooms");
+    }
+  };
+
   useEffect(() => {
     if (!token) {
       navigate("/login");
+    } else {
+      fetchRooms();
     }
-
-    // TODO: Fetch joined rooms from backend
-    // fetchRooms();
   }, [token, navigate]);
 
   const handleJoin = async () => {
@@ -28,13 +42,12 @@ const Dashboard = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
-      console.log(response.data);
       navigate(`/room/${roomId}`);
     } catch (error) {
-      console.log(error.response?.data || error.message);
+      alert(error.response?.data?.message || "Unable to join room");
     }
   };
 
@@ -47,79 +60,111 @@ const Dashboard = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
-      console.log(response.data)
+
       const newRoomId = response.data.room.roomId;
       navigate(`/room/${newRoomId}`);
     } catch (error) {
-      console.log(error.response?.data || error.message);
+      alert(error.response?.data?.message || "Unable to create room");
     }
   };
 
+  const handleDelete = async (roomId) => {
+  try {
+    await axios.delete(
+      `http://localhost:3000/room/${roomId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    fetchRooms(); // refresh after delete
+  } catch (error) {
+    console.log(error)
+    alert("Delete failed");
+  }
+};
+
   return (
-    <div className="min-h-screen bg-gray-100 px-8 py-10">
-
-      <div className="max-w-4xl mx-auto">
-
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-black text-white px-6 py-10">
+      <div className="max-w-5xl mx-auto">
         {/* Welcome */}
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Welcome back, {user?.name} 
+        <h1 className="text-3xl font-bold mb-8">
+          Welcome back, <span className="text-indigo-400">{user?.name}</span>
         </h1>
 
-        {/* Action Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
-
+        {/* Actions Card */}
+        <div className="backdrop-blur-lg bg-white/10 border border-white/20 p-6 rounded-2xl shadow-xl mb-10">
           <div className="flex flex-col md:flex-row gap-4">
-
+            {/* Create Room */}
             <button
               onClick={handleCreate}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition"
+              className="bg-indigo-600 hover:bg-indigo-700 hover:scale-105 transition text-white px-6 py-3 rounded-lg shadow-lg"
             >
               Create Room
             </button>
 
+            {/* Join Room */}
             <div className="flex flex-1 gap-3">
               <input
                 type="text"
                 placeholder="Enter Room ID"
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="flex-1 bg-white/10 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               />
 
               <button
                 onClick={handleJoin}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition"
+                className="bg-green-600 hover:bg-green-700 hover:scale-105 transition text-white px-6 py-3 rounded-lg shadow-lg"
               >
                 Join
               </button>
             </div>
-
           </div>
         </div>
 
-        {/* Rooms Section (Future Dynamic) */}
-        <div className="bg-white p-6 rounded-2xl shadow-md">
+        {/* Rooms Section */}
+        <div className="backdrop-blur-lg bg-white/10 border border-white/20 p-6 rounded-2xl shadow-xl">
           <h2 className="text-xl font-semibold mb-4">Your Rooms</h2>
 
           {rooms.length === 0 ? (
-            <p className="text-gray-500">No rooms yet. Create or join one.</p>
+            <p className="text-gray-400">No rooms yet. Create or join one.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {rooms.map((room) => (
                 <div
                   key={room._id}
-                  className="border rounded-lg p-4 hover:shadow-md transition cursor-pointer"
-                  onClick={() => navigate(`/room/${room.roomId}`)}
+                  className="bg-white/5 border border-gray-700 rounded-lg p-4 flex justify-between items-center hover:border-indigo-500 transition"
                 >
-                  <p className="font-semibold">{room.roomId}</p>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => navigate(`/room/${room.roomId}`)}
+                  >
+                    <p className="font-semibold text-indigo-400">
+                      {room.roomId}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Created: {new Date(room.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {room.owner?.toString() === user.id &&  (
+                    <button
+                      onClick={() => handleDelete(room.roomId)}
+                      className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

@@ -90,22 +90,94 @@ export const deleteRoom = async (req, res) => {
 export const leaveRoom = async (req, res) => {
   try {
     const { roomId } = req.params;
+
     const room = await Room.findOne({ roomId });
+
     if (!room) {
-      return res.status(404).json({ message: "room not found" });
+      return res.status(404).json({ message: "Room not found" });
     }
-    if (room.owner.toString() === req.user.id) {
-      await Room.deleteOne({ roomId });
-      return res.status(200).json({ message: "Owner left. Room deleted" });
+
+    const isParticipant = room.participants.find(
+      (p) => p.user.toString() === req.user.id,
+    );
+
+    if (!isParticipant) {
+      return res.status(400).json({ message: "You are not in this room" });
     }
+
+    // Remove user from participants
     room.participants = room.participants.filter(
       (p) => p.user.toString() !== req.user.id,
     );
 
     await room.save();
-    return res.status(200).json({ message: "left successfully" });
+
+    return res.status(200).json({ message: "Left room successfully" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "error while leaving room" });
+    return res.status(500).json({ message: "Error while leaving room" });
   }
 };
+
+export const updateCode = async (req, res) => {
+  try {
+    const { roomId } = req.params;
+    const { code } = req.body;
+
+    const room = await Room.findOne({ roomId });
+
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    room.code = code;
+    await room.save();
+
+    return res.status(200).json({ message: "Code saved successfully" });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Error saving code" });
+  }
+};
+
+
+export const getMyRooms = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const rooms = await Room.find({
+      $or: [
+        { owner: userId },
+        { "participants.user": userId },
+      ],
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({ rooms });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch rooms" });
+  }
+};
+
+// export const leaveRoom = async (req, res) => {
+//   try {
+//     const { roomId } = req.params;
+//     const room = await Room.findOne({ roomId });
+//     if (!room) {
+//       return res.status(404).json({ message: "room not found" });
+//     }
+//     if (room.owner.toString() === req.user.id) {
+//       await Room.deleteOne({ roomId });
+//       return res.status(200).json({ message: "Owner left. Room deleted" });
+//     }
+//     room.participants = room.participants.filter(
+//       (p) => p.user.toString() !== req.user.id,
+//     );
+
+//     await room.save();
+//     return res.status(200).json({ message: "left successfully" });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({ message: "error while leaving room" });
+//   }
+// };

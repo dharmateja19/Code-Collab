@@ -16,61 +16,66 @@ const Register = () => {
         email,
         password,
       });
-      console.log("registration successful", response.data);
+
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
+
       setName("");
       setEmail("");
       setPassword("");
+
       navigate("/dashboard");
     } catch (error) {
-      console.log(error.response.data.message);
-      alert(error.response.data.message);
+      alert(error.response?.data?.message || "Registration failed");
     }
   };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-          Create Account 
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
+
+      <div className="w-full max-w-md backdrop-blur-lg bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8 text-white">
+
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Create Your Account 🚀
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+
           {/* Name */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Name</label>
+            <label className="block text-sm text-gray-300 mb-1">Name</label>
             <input
               type="text"
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white/10 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               required
             />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Email</label>
+            <label className="block text-sm text-gray-300 mb-1">Email</label>
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white/10 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               required
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Password</label>
+            <label className="block text-sm text-gray-300 mb-1">Password</label>
             <input
               type="password"
-              placeholder="Enter your password"
+              placeholder="Create a password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white/10 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               required
             />
           </div>
@@ -78,22 +83,22 @@ const Register = () => {
           {/* Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-200 cursor-pointer"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 hover:scale-105 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-lg"
           >
             Register
           </button>
         </form>
 
-        {/* Login Redirect */}
-        <p className="text-center text-sm text-gray-600 mt-6">
+        <p className="text-center text-sm text-gray-400 mt-6">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-blue-500 hover:underline font-medium cursor-pointer"
+            className="text-indigo-400 hover:underline font-medium"
           >
             Login here
           </Link>
         </p>
+
       </div>
     </div>
   );
