@@ -106,6 +106,7 @@
 
 import jwt from "jsonwebtoken";
 import Room from "../models/Room.js";
+import Message from "../models/Message.js";
 
 const activeRooms = {};
 
@@ -125,7 +126,7 @@ export const roomSocket = (io) => {
   io.on("connection", (socket) => {
     console.log("User connected:", socket.user.id);
 
-    // 🔹 Join Room
+    // Join Room
     socket.on("join-room", async (roomId) => {
       try {
         const room = await Room.findOne({ roomId });
@@ -166,20 +167,32 @@ export const roomSocket = (io) => {
 
         io.to(roomId).emit("active-users", activeRooms[roomId]);
 
-        // 🔥 Send saved code only to new user
+        // Send saved code only to new user
         socket.emit("load-code", room.code);
         socket.emit("load-language", room.language);
+
+        // console.log("JOIN ROOM CALLED:", roomId);
+
+        const messages = await Message.find({ roomId }).lean();
+
+        // console.log("Messages found:", messages.length);
+
+        // const messages = (await Message.find({ roomId }))
+        //   .sort({ createdAt: -1 })
+        //   .limit(100)
+        //   .lean();
+        socket.emit("load-messages", messages);
       } catch (error) {
         socket.emit("error", "Join failed");
       }
     });
 
-    // 🔹 Real-time Code Sync
+    // Real-time Code Sync
     socket.on("code-change", ({ roomId, code }) => {
       socket.to(roomId).emit("receive-code", code);
     });
 
-    // 🔹 Leave Room
+    // Leave Room
     socket.on("leave-room", (roomId) => {
       socket.leave(roomId);
 
@@ -192,7 +205,7 @@ export const roomSocket = (io) => {
       }
     });
 
-    // 🔹 On Disconnect
+    // On Disconnect
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.user.id);
 
@@ -212,6 +225,22 @@ export const roomSocket = (io) => {
         socket.to(roomId).emit("receive-language", language);
       } catch (error) {
         socket.emit("error", "Language update failed");
+      }
+    });
+
+    socket.on("send-message", async ({ roomId, message }) => {
+      if (!message.trim()) return;
+      try {
+        const messageData = await Message.create({
+          roomId,
+          userId: socket.user.id,
+          username: socket.user.name,
+          message,
+          type: "text",
+        });
+        io.to(roomId).emit("receive-message", messageData);
+      } catch (error) {
+        socket.emit("error", "Failed to send message");
       }
     });
   });

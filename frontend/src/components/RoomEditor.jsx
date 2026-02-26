@@ -1,246 +1,9 @@
-// import { useParams, useNavigate } from "react-router-dom";
-// import Editor from "@monaco-editor/react";
-// import { useEffect, useState } from "react";
-// import { io } from "socket.io-client";
-
-// const socket = io("http://localhost:3000"); // backend URL
-
-// const RoomEditor = () => {
-//   const { roomId } = useParams();
-//   const navigate = useNavigate();
-
-//   const [participants, setParticipants] = useState([]);
-
-//   const userName = localStorage.getItem("userName") || "Guest";
-
-//   const handleLeave = () => {
-//     socket.disconnect();
-//     navigate("/dashboard");
-//   };
-
-//   useEffect(() => {
-//     const socket = io("http://localhost:3000", {
-//       auth: {
-//         token: localStorage.getItem("token"),
-//       },
-//     });
-
-//     socket.emit("join-room", roomId);
-
-//     socket.on("active-users", (users) => {
-//       console.log("Active users:", users);
-//       setParticipants(users);
-//     });
-
-//     return () => {
-//       socket.emit("leave-room", roomId);
-//       socket.disconnect();
-//     };
-//   }, [roomId]);
-
-//   return (
-//     <div className="h-screen flex flex-col bg-[#1e1e1e] text-white">
-//       {/* Header */}
-//       <div className="h-14 flex items-center justify-between px-6 border-b border-gray-700">
-//         <h3 className="text-lg font-semibold">
-//           Room: <span className="text-green-400">{roomId}</span>
-//         </h3>
-
-//         <button
-//           onClick={handleLeave}
-//           className="bg-red-500 hover:bg-red-600 px-4 py-1 rounded-md text-sm transition"
-//         >
-//           Leave Room
-//         </button>
-//       </div>
-
-//       <div className="flex flex-1 overflow-hidden">
-//         {/* Sidebar */}
-//         <div className="w-64 bg-[#252526] border-r border-gray-700 p-4">
-//           <h4 className="text-md font-semibold mb-4 text-gray-300">
-//             Participants
-//           </h4>
-
-//           <ul className="space-y-2">
-//             {
-//               <ul className="space-y-2">
-//                 {participants.map((user) => (
-//                   <li
-//                     key={user.userId}
-//                     className="bg-[#2d2d2d] px-3 py-2 rounded-md"
-//                   >
-//                     {user.name}
-//                   </li>
-//                 ))}
-//               </ul>
-//             }
-//           </ul>
-//         </div>
-
-//         {/* Editor */}
-//         <div className="flex-1">
-//           <Editor
-//             height="100%"
-//             defaultLanguage="javascript"
-//             defaultValue="// Start coding..."
-//             theme="vs-dark"
-//           />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default RoomEditor;
-
-// import { useParams, useNavigate } from "react-router-dom";
-// import Editor from "@monaco-editor/react";
-// import { useEffect, useState, useRef } from "react";
-// import axios from "axios";
-// import { io } from "socket.io-client";
-
-// const RoomEditor = () => {
-//   const { roomId } = useParams();
-//   const navigate = useNavigate();
-
-//   const [participants, setParticipants] = useState([]);
-//   const [code, setCode] = useState("");
-//   const socketRef = useRef(null);
-//   const saveTimeout = useRef(null);
-
-//   const token = localStorage.getItem("token");
-
-//   // 🔹 Fetch room + saved code
-//   useEffect(() => {
-//     const fetchRoom = async () => {
-//       try {
-//         const response = await axios.get(
-//           `http://localhost:3000/room/${roomId}`,
-//           {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//             },
-//           }
-//         );
-
-//         setCode(response.data.code);
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     };
-
-//     fetchRoom();
-//   }, [roomId, token]);
-
-//   // 🔹 Setup socket
-//   useEffect(() => {
-//     const socket = io("http://localhost:3000", {
-//       auth: { token },
-//     });
-
-//     socketRef.current = socket;
-
-//     socket.emit("join-room", roomId);
-
-//     socket.on("active-users", (users) => {
-//       setParticipants(users);
-//     });
-
-//     return () => {
-//       socket.emit("leave-room", roomId);
-//       socket.disconnect();
-//     };
-//   }, [roomId, token]);
-
-//   // 🔹 Auto-save (debounced)
-//   const handleEditorChange = (value) => {
-//     setCode(value);
-
-//     if (saveTimeout.current) {
-//       clearTimeout(saveTimeout.current);
-//     }
-
-//     saveTimeout.current = setTimeout(async () => {
-//       try {
-//         await axios.put(
-//           `http://localhost:3000/room/${roomId}/code`,
-//           { code: value },
-//           {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//             },
-//           }
-//         );
-//       } catch (error) {
-//         console.log("Save failed");
-//       }
-//     }, 1000); // saves 1 sec after typing stops
-//   };
-
-//   return (
-//     <div className="h-screen flex flex-col bg-[#1e1e1e] text-white">
-
-//       {/* Header */}
-//       <div className="h-14 flex items-center justify-between px-6 border-b border-gray-700">
-//         <h3 className="text-lg font-semibold">
-//           Room: <span className="text-indigo-400">{roomId}</span>
-//         </h3>
-
-//         <button
-//           onClick={() => navigate("/dashboard")}
-//           className="bg-red-600 hover:bg-red-700 px-4 py-1 rounded-md text-sm"
-//         >
-//           Leave
-//         </button>
-//       </div>
-
-//       <div className="flex flex-1">
-
-//         {/* Sidebar */}
-//         <div className="w-64 bg-[#252526] border-r border-gray-700 p-4">
-//           <h4 className="mb-4 text-gray-300">
-//             Participants ({participants.length})
-//           </h4>
-
-//           <ul className="space-y-2">
-//             {participants.map((user) => (
-//               <li
-//                 key={user.userId}
-//                 className="bg-[#2d2d2d] px-3 py-2 rounded-md"
-//               >
-//                 {user.name}
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-
-//         {/* Editor */}
-//         <div className="flex-1">
-//           <Editor
-//             height="100%"
-//             language="javascript"
-//             value={code}
-//             onChange={handleEditorChange}
-//             theme="vs-dark"
-//             options={{
-//               minimap: { enabled: false },
-//               automaticLayout: true,
-//             }}
-//           />
-//         </div>
-
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default RoomEditor;
-
 import { useParams, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
+import { jwtDecode } from "jwt-decode";
 
 const RoomEditor = () => {
   const { roomId } = useParams();
@@ -252,7 +15,13 @@ const RoomEditor = () => {
   const socketRef = useRef(null);
   const saveTimeout = useRef(null);
   const [copied, setCopied] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const chatEndRef = useRef(null);
+  // const [showParticipants, setShowParticipants] = useState(true);
+  const [showChat, setShowChat] = useState(true);
 
+  const token = localStorage.getItem("token");
   const handleCopyRoomId = async () => {
     await navigator.clipboard.writeText(roomId);
     setCopied(true);
@@ -262,39 +31,91 @@ const RoomEditor = () => {
     }, 1500);
   };
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // 🔹 Setup socket connection
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3000", {
+  //     auth: { token },
+  //   });
+
+  //   socketRef.current = socket;
+
+  //   socket.emit("join-room", roomId);
+
+  //   // 🔥 Load initial saved code
+  //   socket.on("load-code", (savedCode) => {
+  //     setCode(savedCode);
+  //   });
+
+  //   // 🔥 Receive real-time updates
+  //   socket.on("receive-code", (newCode) => {
+  //     setCode(newCode);
+  //   });
+
+  //   socket.on("load-language", (lang) => {
+  //     setLanguage(lang);
+  //   });
+
+  //   socket.on("receive-language", (lang) => {
+  //     setLanguage(lang);
+  //   });
+
+  //   // 🔥 Active participants
+  //   socket.on("active-users", (users) => {
+  //     setParticipants(users);
+  //   });
+
+  //   socket.on("load-messages", (loadedMessages) => {
+  //     setMessages(loadedMessages);
+  //   });
+
+  //   socket.on("receive-message", (message) => {
+  //     setMessages((prev) => [...prev, message]);
+  //   });
+
+  //   return () => {
+  //     socket.off("load-code");
+  //     socket.off("receive-code");
+  //     socket.off("load-language");
+  //     socket.off("receive-language");
+  //     socket.off("active-users");
+  //     socket.off("load-messages");
+  //     socket.off("receive-message");
+
+  //     socket.emit("leave-room", roomId);
+  //     socket.disconnect();
+  //   };
+  // }, [roomId, token]);
+
   useEffect(() => {
     const socket = io("http://localhost:3000", {
       auth: { token },
+      transports: ["websocket"],
     });
 
     socketRef.current = socket;
 
-    socket.emit("join-room", roomId);
-
-    // 🔥 Load initial saved code
-    socket.on("load-code", (savedCode) => {
-      setCode(savedCode);
+    socket.on("connect", () => {
+      console.log("Connected:", socket.id);
+      socket.emit("join-room", roomId);
     });
 
-    // 🔥 Receive real-time updates
-    socket.on("receive-code", (newCode) => {
-      setCode(newCode);
+    socket.on("load-code", setCode);
+    socket.on("receive-code", setCode);
+    socket.on("load-language", setLanguage);
+    socket.on("receive-language", setLanguage);
+    socket.on("active-users", setParticipants);
+
+    socket.on("load-messages", (loadedMessages) => {
+      console.log("Loaded messages:", loadedMessages.length);
+      setMessages(loadedMessages);
     });
 
-    socket.on("load-language", (lang) => {
-      setLanguage(lang);
-    });
-
-    socket.on("receive-language", (lang) => {
-      setLanguage(lang);
-    });
-
-    // 🔥 Active participants
-    socket.on("active-users", (users) => {
-      setParticipants(users);
+    socket.on("receive-message", (message) => {
+      setMessages((prev) => [...prev, message]);
     });
 
     return () => {
@@ -340,13 +161,28 @@ const RoomEditor = () => {
           },
         );
       } catch (error) {
+        console.log(error);
         console.log("Save failed");
       }
     }, 1000);
   };
 
+  const handleSend = () => {
+    if (!input.trim()) return;
+
+    socketRef.current.emit("send-message", {
+      roomId,
+      message: input,
+    });
+
+    setInput("");
+  };
+
+  const decoded = token ? jwtDecode(token) : null;
+  const currentUserId = decoded?.id;
+
   return (
-    <div className="h-screen flex flex-col bg-[#1e1e1e] text-white">
+    <div className="h-screen flex flex-col bg-[#1e1e1e] text-white overflow-hidden">
       {/* Header */}
       <div className="h-14 flex items-center justify-between px-6 border-b border-gray-700 bg-[#202020]">
         {/* Left: Room ID */}
@@ -379,6 +215,13 @@ const RoomEditor = () => {
           </select>
         </div>
 
+        <button
+          onClick={() => setShowChat((prev) => !prev)}
+          className="bg-[#2d2d2d] px-3 py-1 rounded-md text-sm"
+        >
+          {showChat ? "Hide Chat" : "Show Chat"}
+        </button>
+
         {/* Right: Leave Button */}
         <button
           onClick={() => navigate("/dashboard")}
@@ -388,7 +231,7 @@ const RoomEditor = () => {
         </button>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar */}
         <div className="w-64 bg-[#252526] border-r border-gray-700 p-4 flex flex-col">
           <h4 className="text-md font-semibold mb-4 text-gray-300">
@@ -396,14 +239,6 @@ const RoomEditor = () => {
           </h4>
 
           <ul className="space-y-2 overflow-y-auto">
-            {/* {participants.map((user) => (
-              <li
-                key={user.userId}
-                className="bg-[#2d2d2d] px-3 py-2 rounded-md hover:bg-[#333] transition"
-              >
-                {user.name}
-              </li>
-            ))} */}
             {participants.map((user) => (
               <li
                 key={user.userId}
@@ -424,7 +259,7 @@ const RoomEditor = () => {
         </div>
 
         {/* Monaco Editor */}
-        <div className="flex-1">
+        <div className={`flex-1 transition-all duration-300`}>
           <Editor
             height="100%"
             language={language}
@@ -436,6 +271,79 @@ const RoomEditor = () => {
               automaticLayout: true,
             }}
           />
+        </div>
+
+        <div
+          className={`
+            absolute right-0 top-0 h-full w-80
+            bg-[#252526] border-l border-gray-700
+            flex flex-col
+            transform transition-transform duration-300 ease-in-out
+            ${showChat ? "translate-x-0" : "translate-x-full"}
+          `}
+        >
+          <div className="p-3 font-semibold border-b border-gray-700">
+            Room Chat
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            {messages.map((msg, index) => {
+              const isOwnMessage = msg.userId?.toString() === currentUserId;
+
+              if (msg.type === "system") {
+                return (
+                  <div
+                    key={index}
+                    className="text-center text-gray-400 text-sm italic"
+                  >
+                    {msg.message}
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={index}
+                  className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}
+                >
+                  <div className="text-xs text-gray-400">{msg.username}</div>
+
+                  <div
+                    className={`px-3 py-2 rounded-lg max-w-xs wrap-break-word ${
+                      isOwnMessage
+                        ? "bg-blue-600 text-white"
+                        : "bg-[#3c3c3c] text-white"
+                    }`}
+                  >
+                    {msg.message}
+                  </div>
+
+                  <div className="text-[10px] text-gray-500">
+                    {new Date(msg.createdAt).toLocaleTimeString()}
+                  </div>
+                </div>
+              );
+            })}
+
+            <div ref={chatEndRef}></div>
+          </div>
+
+          <div className="p-2 border-t border-gray-700 flex gap-2">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              placeholder="Type a message..."
+              className="flex-1 bg-[#1e1e1e] text-white p-2 rounded outline-none"
+            />
+
+            <button
+              onClick={handleSend}
+              className="bg-blue-600 px-4 rounded text-white"
+            >
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>
