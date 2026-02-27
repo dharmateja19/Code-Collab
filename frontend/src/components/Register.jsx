@@ -12,7 +12,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://code-collab-dg67.onrender.com/auth/register", {
+      const response = await axios.post("${import.meta.env.VITE_BACKEND_URL}/auth/register", {
         name,
         email,
         password,

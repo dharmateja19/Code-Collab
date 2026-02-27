@@ -28,7 +28,7 @@ const RoomEditor = () => {
   }, [messages]);
 
   useEffect(() => {
-    const socket = io("https://code-collab-dg67.onrender.com", {
+    const socket = io(`${import.meta.env.VITE_BACKEND_URL}`, {
       auth: { token },
       transports: ["websocket"],
     });
@@ -99,7 +99,7 @@ const RoomEditor = () => {
     saveTimeout.current = setTimeout(async () => {
       try {
         await axios.put(
-          `https://code-collab-dg67.onrender.com/room/${roomId}/code`,
+          `${import.meta.env.VITE_BACKEND_URL}/room/${roomId}/code`,
           { code: value },
           {
             headers: {
