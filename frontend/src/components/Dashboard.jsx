@@ -13,7 +13,7 @@ const Dashboard = () => {
 
   const fetchRooms = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/room/my-rooms", {
+      const response = await axios.get("https://code-collab-dg67.onrender.com/room/my-rooms", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -37,7 +37,7 @@ const Dashboard = () => {
   const handleJoin = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/room/join",
+        "https://code-collab-dg67.onrender.com/room/join",
         { roomId },
         {
           headers: {
@@ -55,7 +55,7 @@ const Dashboard = () => {
   const handleCreate = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/room/create",
+        "https://code-collab-dg67.onrender.com/room/create",
         {},
         {
           headers: {
@@ -75,7 +75,7 @@ const Dashboard = () => {
   const handleDelete = async (roomId) => {
   try {
     await axios.delete(
-      `http://localhost:3000/room/${roomId}`,
+      `https://code-collab-dg67.onrender.com/room/${roomId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

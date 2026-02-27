@@ -28,7 +28,7 @@ const RoomEditor = () => {
   }, [messages]);
 
   useEffect(() => {
-    const socket = io("http://localhost:3000", {
+    const socket = io("https://code-collab-dg67.onrender.com", {
       auth: { token },
       transports: ["websocket"],
     });
@@ -99,7 +99,7 @@ const RoomEditor = () => {
     saveTimeout.current = setTimeout(async () => {
       try {
         await axios.put(
-          `http://localhost:3000/room/${roomId}/code`,
+          `https://code-collab-dg67.onrender.com/room/${roomId}/code`,
           { code: value },
           {
             headers: {
