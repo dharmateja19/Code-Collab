@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,17 +18,17 @@ const Login = () => {
 
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-
+      toast.success("Login successful!");
       setEmail("");
       setPassword("");
       navigate("/dashboard");
     } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
+      toast.error(error.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-900 via-gray-800 to-black px-4">
 
       <div className="w-full max-w-md backdrop-blur-lg bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8 text-white">
 
@@ -66,7 +67,7 @@ const Login = () => {
           {/* Button */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 hover:scale-105 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-lg"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 hover:scale-105 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-lg cursor-pointer"
           >
             Login
           </button>

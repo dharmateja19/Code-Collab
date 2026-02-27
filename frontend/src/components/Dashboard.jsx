@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,8 +21,8 @@ const Dashboard = () => {
 
       setRooms(response.data.rooms);
     } catch (error) {
-      console.log(error);
-      console.log("Failed to load rooms");
+      // console.log(error);
+      toast.error(error.response?.data?.message || "Unable to fetch rooms");
     }
   };
 
@@ -44,10 +45,10 @@ const Dashboard = () => {
           },
         },
       );
-
+      // console.log(response.data)
       navigate(`/room/${roomId}`);
     } catch (error) {
-      alert(error.response?.data?.message || "Unable to join room");
+      toast.error(error.response?.data?.message || "Unable to join room");
     }
   };
 
@@ -65,8 +66,9 @@ const Dashboard = () => {
 
       const newRoomId = response.data.room.roomId;
       navigate(`/room/${newRoomId}`);
+      toast.success("Room created successfully!");
     } catch (error) {
-      alert(error.response?.data?.message || "Unable to create room");
+      toast.error(error.response?.data?.message || "Unable to create room");
     }
   };
 
@@ -80,11 +82,11 @@ const Dashboard = () => {
         },
       }
     );
-
-    fetchRooms(); // refresh after delete
+    toast.success("Room deleted successfully!");
+    fetchRooms(); 
   } catch (error) {
     console.log(error)
-    alert("Delete failed");
+    toast.error(error.response?.data?.message || "Unable to delete room");
   }
 };
 
@@ -102,7 +104,7 @@ const Dashboard = () => {
             {/* Create Room */}
             <button
               onClick={handleCreate}
-              className="bg-indigo-600 hover:bg-indigo-700 hover:scale-105 transition text-white px-6 py-3 rounded-lg shadow-lg"
+              className="bg-indigo-600 hover:bg-indigo-700 hover:scale-105 transition text-white px-6 py-3 rounded-lg shadow-lg cursor-pointer"
             >
               Create Room
             </button>
@@ -119,7 +121,7 @@ const Dashboard = () => {
 
               <button
                 onClick={handleJoin}
-                className="bg-green-600 hover:bg-green-700 hover:scale-105 transition text-white px-6 py-3 rounded-lg shadow-lg"
+                className="bg-green-600 hover:bg-green-700 hover:scale-105 transition text-white px-6 py-3 rounded-lg shadow-lg cursor-pointer"
               >
                 Join
               </button>
@@ -155,7 +157,7 @@ const Dashboard = () => {
                   {room.owner?.toString() === user.id &&  (
                     <button
                       onClick={() => handleDelete(room.roomId)}
-                      className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
+                      className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm cursor-pointer"
                     >
                       Delete
                     </button>

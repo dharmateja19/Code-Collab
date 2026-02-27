@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -12,6 +13,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    toast.success("Logged out successfully!");
     navigate("/login");
   };
 
@@ -69,15 +71,6 @@ const Navbar = () => {
               >
                 Dashboard
               </Link>
-
-
-              {/* <Link
-                to="/profile"
-                className="block px-4 py-2 hover:bg-gray-100 transition"
-                onClick={() => setOpen(false)}
-              >
-                Profile
-              </Link> */}
 
               <button
                 onClick={handleLogout}

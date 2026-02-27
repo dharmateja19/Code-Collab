@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white flex flex-col justify-center items-center px-6">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-black text-white flex flex-col justify-center items-center px-6">
 
       {/* Hero Section */}
       <div className="text-center max-w-3xl">
@@ -25,7 +25,7 @@ const Home = () => {
           </Link>
 
           <Link
-            to="/login"
+            to="/dashboard"
             className="px-8 py-3 border border-gray-500 rounded-xl text-lg hover:bg-gray-800 transition"
           >
             Join Room

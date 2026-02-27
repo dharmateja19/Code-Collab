@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
+import toast from "react-hot-toast";
 
 const RoomEditor = () => {
   const { roomId } = useParams();
@@ -18,77 +19,13 @@ const RoomEditor = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const chatEndRef = useRef(null);
-  // const [showParticipants, setShowParticipants] = useState(true);
   const [showChat, setShowChat] = useState(true);
 
   const token = localStorage.getItem("token");
-  const handleCopyRoomId = async () => {
-    await navigator.clipboard.writeText(roomId);
-    setCopied(true);
-
-    setTimeout(() => {
-      setCopied(false);
-    }, 1500);
-  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  // 🔹 Setup socket connection
-  // useEffect(() => {
-  //   const socket = io("http://localhost:3000", {
-  //     auth: { token },
-  //   });
-
-  //   socketRef.current = socket;
-
-  //   socket.emit("join-room", roomId);
-
-  //   // 🔥 Load initial saved code
-  //   socket.on("load-code", (savedCode) => {
-  //     setCode(savedCode);
-  //   });
-
-  //   // 🔥 Receive real-time updates
-  //   socket.on("receive-code", (newCode) => {
-  //     setCode(newCode);
-  //   });
-
-  //   socket.on("load-language", (lang) => {
-  //     setLanguage(lang);
-  //   });
-
-  //   socket.on("receive-language", (lang) => {
-  //     setLanguage(lang);
-  //   });
-
-  //   // 🔥 Active participants
-  //   socket.on("active-users", (users) => {
-  //     setParticipants(users);
-  //   });
-
-  //   socket.on("load-messages", (loadedMessages) => {
-  //     setMessages(loadedMessages);
-  //   });
-
-  //   socket.on("receive-message", (message) => {
-  //     setMessages((prev) => [...prev, message]);
-  //   });
-
-  //   return () => {
-  //     socket.off("load-code");
-  //     socket.off("receive-code");
-  //     socket.off("load-language");
-  //     socket.off("receive-language");
-  //     socket.off("active-users");
-  //     socket.off("load-messages");
-  //     socket.off("receive-message");
-
-  //     socket.emit("leave-room", roomId);
-  //     socket.disconnect();
-  //   };
-  // }, [roomId, token]);
 
   useEffect(() => {
     const socket = io("http://localhost:3000", {
@@ -99,8 +36,9 @@ const RoomEditor = () => {
     socketRef.current = socket;
 
     socket.on("connect", () => {
-      console.log("Connected:", socket.id);
+      // console.log("Connected:", socket.id);
       socket.emit("join-room", roomId);
+      toast.success("Joined room successfully!", { id: "join-room" });
     });
 
     socket.on("load-code", setCode);
@@ -124,6 +62,15 @@ const RoomEditor = () => {
     };
   }, [roomId, token]);
 
+  const handleCopyRoomId = async () => {
+    await navigator.clipboard.writeText(roomId);
+    setCopied(true);
+    toast.success("Room ID copied");
+    setTimeout(() => {
+      setCopied(false);
+    }, 1500);
+  };
+
   const handleLanguageChange = (e) => {
     const selectedLang = e.target.value;
     setLanguage(selectedLang);
@@ -134,17 +81,17 @@ const RoomEditor = () => {
     });
   };
 
-  // 🔹 Handle editor change
+  // Handle editor change
   const handleEditorChange = (value) => {
     setCode(value);
 
-    // 🔥 Emit to other users
+    // Emit to other users
     socketRef.current.emit("code-change", {
       roomId,
       code: value,
     });
 
-    // 🔥 Auto-save to DB (debounced)
+    // Auto-save to DB (debounced)
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
@@ -167,6 +114,11 @@ const RoomEditor = () => {
     }, 1000);
   };
 
+  const handleLeave = () => {
+    toast.success("You left the room");
+    navigate("/dashboard");
+  };
+
   const handleSend = () => {
     if (!input.trim()) return;
 
@@ -182,7 +134,7 @@ const RoomEditor = () => {
   const currentUserId = decoded?.id;
 
   return (
-    <div className="h-screen flex flex-col bg-[#1e1e1e] text-white overflow-hidden">
+    <div className="flex flex-col h-full bg-[#1e1e1e] text-white overflow-hidden">
       {/* Header */}
       <div className="h-14 flex items-center justify-between px-6 border-b border-gray-700 bg-[#202020]">
         {/* Left: Room ID */}
@@ -193,7 +145,7 @@ const RoomEditor = () => {
           </span>
           <button
             onClick={handleCopyRoomId}
-            className="bg-[#2d2d2d] hover:bg-[#333] border border-gray-600 px-2 py-1 rounded-md text-xs transition"
+            className="bg-[#2d2d2d] hover:bg-[#333] border border-gray-600 px-2 py-1 rounded-md text-xs transition cursor-pointer"
           >
             {copied ? "Copied!" : "Copy"}
           </button>
@@ -215,17 +167,10 @@ const RoomEditor = () => {
           </select>
         </div>
 
-        <button
-          onClick={() => setShowChat((prev) => !prev)}
-          className="bg-[#2d2d2d] px-3 py-1 rounded-md text-sm"
-        >
-          {showChat ? "Hide Chat" : "Show Chat"}
-        </button>
-
         {/* Right: Leave Button */}
         <button
-          onClick={() => navigate("/dashboard")}
-          className="bg-red-600 hover:bg-red-700 hover:scale-105 transition px-4 py-1 rounded-md text-sm shadow-md"
+          onClick={handleLeave}
+          className="bg-red-600 hover:bg-red-700 hover:scale-105 transition px-4 py-1 rounded-md text-sm shadow-md cursor-pointer"
         >
           Leave
         </button>
@@ -273,6 +218,7 @@ const RoomEditor = () => {
           />
         </div>
 
+        {/* Chat Panel */}
         <div
           className={`
             absolute right-0 top-0 h-full w-80
@@ -282,10 +228,18 @@ const RoomEditor = () => {
             ${showChat ? "translate-x-0" : "translate-x-full"}
           `}
         >
-          <div className="p-3 font-semibold border-b border-gray-700">
-            Room Chat
+          {/* Header */}
+          <div className="p-3 font-semibold border-b border-gray-700 flex justify-between items-center">
+            <span>Room Chat</span>
+            <button
+              onClick={() => setShowChat(false)}
+              className="text-gray-400 hover:text-white text-lg cursor-pointer"
+            >
+              ✕
+            </button>
           </div>
 
+          {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-3">
             {messages.map((msg, index) => {
               const isOwnMessage = msg.userId?.toString() === currentUserId;
@@ -304,7 +258,9 @@ const RoomEditor = () => {
               return (
                 <div
                   key={index}
-                  className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"}`}
+                  className={`flex flex-col ${
+                    isOwnMessage ? "items-end" : "items-start"
+                  }`}
                 >
                   <div className="text-xs text-gray-400">{msg.username}</div>
 
@@ -328,6 +284,7 @@ const RoomEditor = () => {
             <div ref={chatEndRef}></div>
           </div>
 
+          {/* Input */}
           <div className="p-2 border-t border-gray-700 flex gap-2">
             <input
               value={input}
@@ -339,13 +296,30 @@ const RoomEditor = () => {
 
             <button
               onClick={handleSend}
-              className="bg-blue-600 px-4 rounded text-white"
+              className="bg-blue-600 px-4 rounded text-white cursor-pointer"
             >
               Send
             </button>
           </div>
         </div>
       </div>
+      {!showChat && (
+        <button
+          onClick={() => setShowChat(true)}
+          className="
+            fixed bottom-6 right-6
+            w-14 h-14
+            rounded-full
+            bg-indigo-600 hover:bg-indigo-700
+            shadow-lg
+            flex items-center justify-center
+            text-white text-xl  
+            transition transform hover:scale-110 cursor-pointer
+          "
+        >
+          💬
+        </button>
+      )}
     </div>
   );
 };
