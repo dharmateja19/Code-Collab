@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -12,7 +14,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("${import.meta.env.VITE_BACKEND_URL}/auth/register", {
+      const response = await axios.post(`${apiUrl}/auth/register`, {
         name,
         email,
         password,

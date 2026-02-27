@@ -6,6 +6,8 @@ import { io } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 const RoomEditor = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -99,7 +101,7 @@ const RoomEditor = () => {
     saveTimeout.current = setTimeout(async () => {
       try {
         await axios.put(
-          `${import.meta.env.VITE_BACKEND_URL}/room/${roomId}/code`,
+          `${apiUrl}/room/${roomId}/code`,
           { code: value },
           {
             headers: {

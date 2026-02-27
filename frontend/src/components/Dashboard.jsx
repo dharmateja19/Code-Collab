@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -13,7 +15,7 @@ const Dashboard = () => {
 
   const fetchRooms = async () => {
     try {
-      const response = await axios.get("${import.meta.env.VITE_BACKEND_URL}/room/my-rooms", {
+      const response = await axios.get(`${apiUrl}/room/my-rooms`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -37,7 +39,7 @@ const Dashboard = () => {
   const handleJoin = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/room/join`,
+        `${apiUrl}/room/join`,
         { roomId },
         {
           headers: {
@@ -55,7 +57,7 @@ const Dashboard = () => {
   const handleCreate = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/room/create`,
+        `${apiUrl}/room/create`,
         {},
         {
           headers: {
@@ -75,7 +77,7 @@ const Dashboard = () => {
   const handleDelete = async (roomId) => {
   try {
     await axios.delete(
-      `${import.meta.env.VITE_BACKEND_URL}/room/${roomId}`,
+      `${apiUrl}/room/${roomId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
