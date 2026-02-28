@@ -1,109 +1,111 @@
-﻿# Code-Collab
+# 🚀 Code-Collab  
 
-🚀 Code-Collab
+**A real-time collaborative coding platform with live chat and persistent room state built using the MERN stack and Socket.IO.**
 
-A real-time collaborative coding platform with live chat and persistent room state built using the MERN stack and Socket.IO.
+---
 
-📌 Overview
+## 📌 Overview
 
-Code-Collab allows multiple users to join a shared room, edit code together in real time, chat instantly, and automatically persist the code to the database.
+**Code-Collab** allows multiple users to:
+
+- Join a shared room  
+- Edit code together in real time  
+- Chat instantly  
+- Automatically persist code to the database  
 
 It simulates the core collaborative experience of modern online IDE platforms.
 
-✨ Features
-🔐 Authentication
+---
 
-User registration & login
+## ✨ Features
 
-JWT-based authentication
+### 🔐 Authentication
 
-Protected routes
+- User registration & login  
+- JWT-based authentication  
+- Protected routes  
+- Secure middleware validation  
 
-Secure middleware validation
+---
 
-🏠 Room Management
+### 🏠 Room Management
 
-Create room
+- Create room  
+- Join room using unique Room ID  
+- Live participants list  
+- Automatic leave handling  
+- Owner identification 👑  
 
-Join room using unique Room ID
+---
 
-Live participants list
+### 💻 Real-Time Code Collaboration
 
-Automatic leave handling
+- Monaco Editor integration  
+- Live code synchronization via Socket.IO  
+- Room-based event broadcasting  
+- Multi-language support  
 
-Owner identification 
+---
 
-💻 Real-Time Code Collaboration
+### 💬 Real-Time Chat
 
-Monaco Editor integration
+- Room-based messaging system  
+- Instant message broadcasting  
+- Sender name display  
+- Auto scroll handling  
 
-Live code synchronization via Socket.IO
+---
 
-Room-based event broadcasting
+### 💾 Code Persistence
 
-Multi-language support
+- Code stored in MongoDB  
+- Automatic code loading when users join  
+- Persistent room state  
+- No data loss on refresh  
 
-💬 Real-Time Chat
+---
 
-Room-based messaging system
+## 🛠 Tech Stack
 
-Instant message broadcasting
+### 🎨 Frontend
 
-Sender name display
+- React (Vite)  
+- Tailwind CSS  
+- Monaco Editor  
+- Axios  
+- Socket.IO Client  
 
-Auto scroll handling
+---
 
-💾 Code Persistence
+### ⚙️ Backend
 
-Code stored in MongoDB
+- Node.js  
+- Express.js  
+- MongoDB  
+- Mongoose  
+- Socket.IO  
+- JWT Authentication  
+- CORS  
 
-Automatic code loading when users join
+---
 
-Persistent room state
+### 🚀 Deployment
 
-No data loss on refresh
+- Frontend → Vercel  
+- Backend → Render  
 
-🛠 Tech Stack
-Frontend
+---
 
-React (Vite)
+## 🧠 Architecture
 
-Tailwind CSS
+- REST APIs for authentication and room management  
+- WebSockets for real-time code and chat synchronization  
+- MongoDB for persistent room data  
+- JWT for secure sessions  
 
-Monaco Editor
+---
 
-Axios
+## 👨‍💻 Author
 
-Socket.IO Client
-
-Backend
-
-Node.js
-
-Express.js
-
-MongoDB
-
-Mongoose
-
-Socket.IO
-
-JWT Authentication
-
-CORS
-
-Deployment
-
-Frontend → Vercel
-
-Backend → Render
-
-🧠 Architecture
-
-REST APIs for authentication and room management
-
-WebSockets for real-time code and chat synchronization
-
-MongoDB for persistent room data
-
-JWT for secure sessions
+**Dharma Teja Pamarthi**  
+MERN Stack Developer
