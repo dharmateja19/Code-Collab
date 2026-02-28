@@ -145,7 +145,7 @@ VITE_BACKEND_URL=http://localhost:5000
 
 ---
 
-## ▶️ Run the Application
+## Run the Application
 
 ### Start Backend
 
@@ -163,7 +163,7 @@ npm run dev
 
 ---
 
-## 🧑‍💻 Usage
+## Usage
 
 - Register or Login  
 - Create a new room or join an existing room  
@@ -173,7 +173,7 @@ npm run dev
 
 ---
 
-## 🧠 Architecture
+## Architecture
 
 - REST APIs for authentication and room management  
 - WebSockets for real-time code and chat synchronization  
@@ -182,8 +182,9 @@ npm run dev
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Dharma Teja Pamarthi**  
 MERN Stack Developer
+
 
