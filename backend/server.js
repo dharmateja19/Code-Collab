@@ -14,7 +14,9 @@ const app = express();
 
 const server = http.createServer(app);
 
-const allowedOrigins = ["http://localhost:5173", process.env.FRONTEND_URL];
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://code-collab-dusky-pi.vercel.app"
+
+const allowedOrigins = ["http://localhost:5173", FRONTEND_URL];
 
 const PORT = process.env.PORT || 3000;
 
